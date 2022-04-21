@@ -1,27 +1,16 @@
 '''class containing the maze drawing functionality'''
-from enum import IntEnum
 from collections import namedtuple
 import sys
 import math
-from turtle import clear
 import pygame
-from pygame.locals import *
+import constants
 from maze_solver import MazeSolver
 pygame.init()
-
-
 
 
 Colors = namedtuple(
     'Colors', ['black', 'lgray', 'white', 'red', 'yellow', 'blue', 'lime', 'aqua', 'purple'])
 
-class Types(IntEnum):
-    '''class of all the grid types'''
-    BLANK = 0
-    MAZE = 1
-    COM = 2
-    START = 3
-    GOAL = 4
 
 class MazeDrawer:
     '''class that will draw the maze'''
@@ -31,6 +20,7 @@ class MazeDrawer:
     grid = []
     window_width = 800
     window_height = 700
+    grid_dims = 0
     display_surf = pygame.display.set_mode((window_width, window_height))
     pygame.display.set_caption("Maze Solver")
 
@@ -43,10 +33,10 @@ class MazeDrawer:
             for event in pygame.event.get():  # event handling loop
                 #pylint: disable=E0602
                 # ^ pylint doesn't like pygame event variables :(
-                if event.type == QUIT:
+                if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                elif event.type == MOUSEBUTTONDOWN:
+                elif event.type == pygame.MOUSEBUTTONDOWN:
                     mousex, mousey = event.pos
                     self.curr_mouse = [mousex, mousey]
             self.display_scene()
@@ -65,26 +55,27 @@ class MazeDrawer:
 
         # start button
         start_clicked = self.draw_clickable_button(margin, button_top_margin, button_width,
-                                   button_height, self.colors.lime, "SOLVE MAZE")
+                                                   button_height, self.colors.lime, "SOLVE MAZE")
 
         # clear button
         clear_clicked = self.draw_clickable_button(self.window_width - (button_width + margin),
-                                   button_top_margin, button_width,
-                                   button_height, self.colors.yellow, "CLEAR GRID")
+                                                   button_top_margin, button_width,
+                                                   button_height, self.colors.yellow, "CLEAR GRID")
         if start_clicked:
             print("start clicked")
-            maze_solver1 = MazeSolver(Types)
-            maze_solver1.printTest()
+            maze_solver1 = MazeSolver(self.grid)
+            maze_solver1.solve_maze()
         elif clear_clicked:
-            print("clear clicked")
+            self.generate_grid(self.grid_dims)
         self.draw_grid(box_size, margin)
 
     def generate_grid(self, dims):
         '''generate the maze grid'''
-        self.grid = [[Types.BLANK for _ in range(dims)]
+        self.grid_dims = dims
+        self.grid = [[0 for _ in range(dims)]
                      for _ in range(math.floor(dims * 0.75))]
-        self.grid[7][0] = Types.START
-        self.grid[7][19] = Types.GOAL
+        self.grid[7][0] = constants.START
+        self.grid[7][19] = constants.GOAL
 
     def draw_grid(self, box_size, margin):
         '''draw the maze grid'''
@@ -108,7 +99,7 @@ class MazeDrawer:
         row = math.floor((self.curr_mouse[1] - margin) / box_size)
         if (len(self.grid) > row >= 0 and len(self.grid[0]) > col >= 0):
             if self.grid[row][col] not in [3, 4]:
-                self.grid[row][col] = Types.MAZE
+                self.grid[row][col] = constants.MAZE
 
     def generate_maze_1(self):
         '''generate the first default maze'''

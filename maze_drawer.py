@@ -18,15 +18,16 @@ class MazeDrawer:
                     (0,  0, 255), (0, 255,   0), (0, 255, 255), (128,  0, 128))
     curr_mouse = [-1, -1]
     grid = []
+    start_coordinate = (0, 0)
+    goal_coordinate = (0, 0)
     window_width = 800
     window_height = 700
-    grid_dims = 0
     display_surf = pygame.display.set_mode((window_width, window_height))
     pygame.display.set_caption("Maze Solver")
 
     def start_drawing(self):
         '''start the drawing of the maze'''
-        self.generate_grid(20)  # generate the grid 20 x 15
+        self.generate_grid(20)  # generate the grid 20 wide
         fps_clock = pygame.time.Clock()
         while True:  # game started loop
             self.curr_mouse = [-1, -1]
@@ -62,20 +63,25 @@ class MazeDrawer:
                                                    button_top_margin, button_width,
                                                    button_height, self.colors.yellow, "CLEAR GRID")
         if start_clicked:
-            print("start clicked")
-            maze_solver1 = MazeSolver(self.grid)
-            maze_solver1.solve_maze()
+            maze_solver = MazeSolver(self.grid)
+            if maze_solver.solve_maze(self.start_coordinate, self.goal_coordinate):
+                print("THE MAZE IS SOLVED")
+            else:
+                print("This is unsolvable")
         elif clear_clicked:
-            self.generate_grid(self.grid_dims)
+            self.generate_grid(len(self.grid[0]))
         self.draw_grid(box_size, margin)
 
     def generate_grid(self, dims):
         '''generate the maze grid'''
-        self.grid_dims = dims
-        self.grid = [[0 for _ in range(dims)]
-                     for _ in range(math.floor(dims * 0.75))]
-        self.grid[7][0] = constants.START
-        self.grid[7][19] = constants.GOAL
+        height_dims = math.floor(dims * 0.75)
+        middle_index = math.floor(height_dims/2) - 1
+        self.start_coordinate = (0, middle_index)
+        self.goal_coordinate = (dims - 1, middle_index)
+        self.grid = [[constants.BLANK for _ in range(dims)]
+                     for _ in range(height_dims)]
+        self.grid[middle_index][0] = constants.START
+        self.grid[middle_index][dims - 1] = constants.GOAL
 
     def draw_grid(self, box_size, margin):
         '''draw the maze grid'''

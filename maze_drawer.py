@@ -4,6 +4,7 @@ import sys
 import math
 import pygame
 import constants
+import pickle
 from maze_solver import MazeSolver
 pygame.init()
 
@@ -19,7 +20,7 @@ class MazeDrawer:
     curr_mouse = [-1, -1]
     grid = []
     window_width = 800
-    window_height = 700
+    window_height = 760
     grid_dims = 0
     display_surf = pygame.display.set_mode((window_width, window_height))
     pygame.display.set_caption("Maze Solver")
@@ -61,12 +62,32 @@ class MazeDrawer:
         clear_clicked = self.draw_clickable_button(self.window_width - (button_width + margin),
                                                    button_top_margin, button_width,
                                                    button_height, self.colors.yellow, "CLEAR GRID")
+
+        # save grid button
+        save_clicked = self.draw_clickable_button(margin, button_top_margin + button_height + margin, button_width,
+                                                  button_height, self.colors.aqua, "SAVE MAZE")
+
+        # clear button
+        load_clicked = self.draw_clickable_button(self.window_width - (button_width + margin),
+                                                  button_top_margin + button_height + margin, button_width,
+                                                  button_height, self.colors.purple, "LOAD GRID")
+
         if start_clicked:
             print("start clicked")
             maze_solver1 = MazeSolver(self.grid)
             maze_solver1.solve_maze()
         elif clear_clicked:
             self.generate_grid(self.grid_dims)
+        elif save_clicked:
+            print("saving current grid")
+            pickle_file = open("save.pickle", "wb")
+            pickle.dump(self.grid, pickle_file)
+            pickle_file.close()
+        elif load_clicked:
+            print("loading saved grid")
+            pickle_file = open("save.pickle", "rb")
+            self.grid = pickle.load(pickle_file)
+            pickle_file.close()
         self.draw_grid(box_size, margin)
 
     def generate_grid(self, dims):

@@ -4,6 +4,7 @@ import sys
 import math
 import pygame
 import constants
+import pickle
 from maze_solver import MazeSolver
 pygame.init()
 
@@ -62,6 +63,16 @@ class MazeDrawer:
         clear_clicked = self.draw_clickable_button(self.window_width - (button_width + margin),
                                                    button_top_margin, button_width,
                                                    button_height, self.colors.yellow, "CLEAR GRID")
+
+        # save grid button
+        save_clicked = self.draw_clickable_button(margin, button_top_margin + button_height + margin, button_width,
+                                                  button_height, self.colors.aqua, "SAVE MAZE")
+
+        # clear button
+        load_clicked = self.draw_clickable_button(self.window_width - (button_width + margin),
+                                                  button_top_margin + button_height + margin, button_width,
+                                                  button_height, self.colors.purple, "LOAD GRID")
+
         if start_clicked:
             maze_solver = MazeSolver(self.grid)
             if maze_solver.solve_maze(self.start_coordinate, self.goal_coordinate):
@@ -70,6 +81,16 @@ class MazeDrawer:
                 print("This is unsolvable")
         elif clear_clicked:
             self.generate_grid(len(self.grid[0]))
+        elif save_clicked:
+            print("saving current grid")
+            pickle_file = open("save.pickle", "wb")
+            pickle.dump(self.grid, pickle_file)
+            pickle_file.close()
+        elif load_clicked:
+            print("loading saved grid")
+            pickle_file = open("save.pickle", "rb")
+            self.grid = pickle.load(pickle_file)
+            pickle_file.close()
         self.draw_grid(box_size, margin)
 
     def generate_grid(self, dims):

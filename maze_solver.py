@@ -1,7 +1,6 @@
 '''class file for the AI algorithm'''
 import heapq
 import math
-from tracemalloc import start
 import constants
 class MazeSolver():
     '''class that solves maze in a grid using A* algorithm'''
@@ -22,12 +21,20 @@ class MazeSolver():
                 return True
             explored.add((0, lowest_cost_cell))
             for child_cell in self.find_children(lowest_cost_cell):
-                if child_cell not in frontier or explored:
+                in_frontier = False
+                in_explored = False
+                found_index = 0
+                for index, cell in enumerate(frontier):
+                    if child_cell[1] == cell[1]:
+                        in_frontier = True
+                        found_index = index
+                for index, cell in enumerate(explored):
+                    if child_cell[1] == cell[1]:
+                        in_explored = True
+                if not in_frontier and in_explored:
                     frontier.append((self.generate_cost(child_cell, start_coordinate, goal_coordinate), child_cell))
-                else:
-                    for frontier_index, frontier_cell in enumerate(frontier):
-                        if frontier_cell[1] == child_cell[1]:
-                            frontier_cell[0] = child_cell[0]
+                #elif in_frontier:
+                #        if frontier[found_index]
 
                  
     

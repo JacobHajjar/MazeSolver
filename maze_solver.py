@@ -59,23 +59,28 @@ class MazeSolver():
         child_list = []
 
         right_coordinate = current_cell[1][0] + 1
-        right_cell = self.grid[current_cell[1][1]][right_coordinate]
-        if (right_coordinate < max_width) and (right_cell != constants.MAZE):
-            child_list.append((right_coordinate, current_cell[1][1]))
+        
+        if (right_coordinate < max_width):
+            right_cell = self.grid[current_cell[1][1]][right_coordinate]
+            if (right_cell != constants.MAZE):
+                child_list.append((right_coordinate, current_cell[1][1]))
 
         left_coordinate = current_cell[1][0] - 1
-        left_cell = self.grid[current_cell[1][1]][left_coordinate]
-        if (left_coordinate >= 0) and (left_cell != constants.MAZE):
-            child_list.append((left_coordinate, current_cell[1][1]))
+        if (left_coordinate >= 0):
+            left_cell = self.grid[current_cell[1][1]][left_coordinate]
+            if (left_cell != constants.MAZE):  
+                child_list.append((left_coordinate, current_cell[1][1]))
 
         below_coordinate = current_cell[1][1] + 1
-        below_cell =  self.grid[below_coordinate][current_cell[1][0]]
-        if (below_coordinate < max_height) and (below_cell != constants.MAZE):
-            child_list.append((current_cell[1][0], below_coordinate))
+        if (below_coordinate < max_height):
+            below_cell =  self.grid[below_coordinate][current_cell[1][0]]
+            if (below_cell != constants.MAZE):
+                child_list.append((current_cell[1][0], below_coordinate))
 
         above_coordinate = current_cell[1][1] - 1
-        above_cell =  self.grid[above_coordinate][current_cell[1][0]]
-        if (above_coordinate >= 0) and (above_cell != constants.MAZE):
-            child_list.append((current_cell[1][0], above_coordinate))
+        if (above_coordinate >= 0):
+            above_cell =  self.grid[above_coordinate][current_cell[1][0]]
+            if (above_cell != constants.MAZE):   
+                child_list.append((current_cell[1][0], above_coordinate))
 
         return child_list

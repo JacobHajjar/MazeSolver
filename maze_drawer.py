@@ -125,12 +125,12 @@ class MazeDrawer:
         '''checks if a click was made inside the grid'''
         col = math.floor((self.curr_mouse[0] - margin) / box_size)
         row = math.floor((self.curr_mouse[1] - margin) / box_size)
-        if (len(self.grid) > row >= 0 and len(self.grid[0]) > col >= 0):
-            if self.grid[row][col] not in [3, 4]:
-                self.grid[row][col] = constants.MAZE
-
-    def generate_maze_1(self):
-        '''generate the first default maze'''
+        if (len(self.grid) > row >= 0 and len(self.grid[0]) > col >= 0): #check in bounds
+            if self.grid[row][col] not in [constants.START, constants.GOAL]:
+                if self.grid[row][col] != constants.MAZE:
+                    self.grid[row][col] = constants.MAZE
+                else:
+                    self.grid[row][col] = constants.BLANK
 
     def draw_clickable_button(self, left, top, width, height, color, text):
         '''draw a clickable button in the scene that returns true if clicked'''

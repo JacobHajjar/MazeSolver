@@ -22,7 +22,7 @@ class MazeDrawer:
     start_coordinate = (0, 0)
     goal_coordinate = (0, 0)
     window_width = 800
-    window_height = 700
+    window_height = 760
     display_surf = pygame.display.set_mode((window_width, window_height))
     pygame.display.set_caption("Maze Solver")
 
@@ -74,8 +74,9 @@ class MazeDrawer:
                                                   button_height, self.colors.purple, "LOAD GRID")
 
         if start_clicked:
-            maze_solver = MazeSolver(self.grid)
-            if maze_solver.solve_maze(self.start_coordinate, self.goal_coordinate):
+            maze_solver = MazeSolver(self.grid, self.start_coordinate, self.goal_coordinate)
+            solved = maze_solver.solve_maze()
+            if solved:
                 print("THE MAZE IS SOLVED")
             else:
                 print("This is unsolvable")
@@ -96,7 +97,7 @@ class MazeDrawer:
     def generate_grid(self, dims):
         '''generate the maze grid'''
         height_dims = math.floor(dims * 0.75)
-        middle_index = math.floor(height_dims/2) - 1
+        middle_index = math.floor(height_dims/2)
         self.start_coordinate = (0, middle_index)
         self.goal_coordinate = (dims - 1, middle_index)
         self.grid = [[constants.BLANK for _ in range(dims)]

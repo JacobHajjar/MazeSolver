@@ -2,9 +2,9 @@
 from collections import namedtuple
 import sys
 import math
+import pickle
 import pygame
 import constants
-import pickle
 from maze_solver import MazeSolver
 pygame.init()
 
@@ -65,34 +65,42 @@ class MazeDrawer:
                                                    button_height, self.colors.yellow, "CLEAR GRID")
 
         # save grid button
-        save_clicked = self.draw_clickable_button(margin, button_top_margin + button_height + margin, button_width,
-                                                  button_height, self.colors.aqua, "SAVE MAZE")
+        save_clicked = self.draw_clickable_button(margin, button_top_margin + button_height +
+                                                  margin, button_width, button_height, self.colors.aqua, "SAVE MAZE")
 
         # clear button
-        load_clicked = self.draw_clickable_button(self.window_width - (button_width + margin),
-                                                  button_top_margin + button_height + margin, button_width,
+        load_clicked = self.draw_clickable_button(self.window_width -
+                                                  (button_width + margin), button_top_margin +
+                                                  button_height + margin, button_width,
                                                   button_height, self.colors.purple, "LOAD GRID")
-
+        completion_message = ""
         if start_clicked:
-            maze_solver = MazeSolver(self.grid, self.start_coordinate, self.goal_coordinate)
+            maze_solver = MazeSolver(
+                self.grid, self.start_coordinate, self.goal_coordinate)
             solved = maze_solver.solve_maze()
             if solved:
-                print("THE MAZE IS SOLVED")
+                completion_message = "Solution Found!"
             else:
-                print("This is unsolvable")
+                completion_message = "No solution found"
         elif clear_clicked:
             self.generate_grid(len(self.grid[0]))
         elif save_clicked:
-            print("saving current grid")
-            pickle_file = open("save.pickle", "wb")
-            pickle.dump(self.grid, pickle_file)
-            pickle_file.close()
+            with open("save.pickle", "wb") as pickle_file:
+                pickle.dump(self.grid, pickle_file)
+                pickle_file.close()
         elif load_clicked:
-            print("loading saved grid")
-            pickle_file = open("save.pickle", "rb")
-            self.grid = pickle.load(pickle_file)
-            pickle_file.close()
+            with open("save.pickle", "rb") as pickle_file:
+                self.grid = pickle.load(pickle_file)
+                pickle_file.close()
+
         self.draw_grid(box_size, margin)
+        if completion_message != "":
+            text_rend, text_box = load_default_text(
+                90, self.colors.lgray, completion_message)
+            text_box.center = (self.window_width/2, self.window_height * 1/3)
+            self.display_surf.blit(text_rend, text_box)
+            pygame.display.update()
+            pygame.time.delay(2000)
 
     def generate_grid(self, dims):
         '''generate the maze grid'''
@@ -125,7 +133,8 @@ class MazeDrawer:
         '''checks if a click was made inside the grid'''
         col = math.floor((self.curr_mouse[0] - margin) / box_size)
         row = math.floor((self.curr_mouse[1] - margin) / box_size)
-        if (len(self.grid) > row >= 0 and len(self.grid[0]) > col >= 0): #check in bounds
+        # check in bounds
+        if (len(self.grid) > row >= 0 and len(self.grid[0]) > col >= 0):
             if self.grid[row][col] not in [constants.START, constants.GOAL]:
                 if self.grid[row][col] != constants.MAZE:
                     self.grid[row][col] = constants.MAZE
